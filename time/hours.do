@@ -17,6 +17,7 @@ See Angrist and Pischke fotr more information
 local SE="hc2"
 
 clear
+program drop _all
 clear matrix
 clear mata
 set more off
@@ -27,11 +28,15 @@ set maxvar 15000
 *local scale = 1
 
 
-/*
-Set control=1 if regressions control for X's
-*/
+/*Set control=1 if regressions control for X's*/
 
 local controls=1
+
+
+/*Set draws for bootstraps  of test for diff effects*/
+local draws = 1000
+
+set seed 100
 
 
 
@@ -272,7 +277,12 @@ forvalues x=0/1{
 	qui: ivqte hours (d_ra) if d_young==`x', quantiles(.05 .1 .15 .2 .25 .3 .35 .4 .45 .5 .55 .60 /*
 	*/.65 .7 .75 .8 .85 .90 .95) variance
 
+
 	forvalues q = 1/19{
+
+		local beta_`x'_q`q' = _b[Quantile_`q']
+		local se_`x'_q`q' = _se[Quantile_`q']
+
 
 		if `q'==1{
 			mat betas_5_`x' = (_b[Quantile_`q'],_b[Quantile_`q'] - invnorm(0.975)*_se[Quantile_`q'],/*
@@ -293,7 +303,21 @@ forvalues x=0/1{
 
 }
 
+*Differences in treatment effects and tests
+log using "$results/diff_effects.txt", replace text
+forvalues q=1/19{
+	local diff_q`q' = `beta_1_q`q'' - `beta_0_q`q''
+	local ttest_q`q' = (`beta_1_q`q'' - `beta_0_q`q'') / (`se_1_q`q'^2' + `se_0_q`q'^2')^.5
+	local qq = `q'*5
+	dis "This is quantile `qq'"
+	dis ""
+	dis `diff_q`q''
+	dis `ttest_q`q''
+	dis ""
+	dis ""
+}
 
+log close
 
 
 **********************************************************************
@@ -371,5 +395,51 @@ forvalues x=0/1{ /*the sample loop*/
 
 }
 
+keep hours* d_ra sampleid d_young
+reshape long hours, i(sampleid) j(quarter)
 	
+tempfile data_aux
+save `data_aux', replace
+
+forvalues nn=1/100{
+	use `data_aux', clear
+	bsample, cluster(sampleid) idcluster(newid)
+	
+
+	forvalues x=0/1{
+
+		qui: ivqte hours (d_ra) if d_young==`x', quantiles(.05 .1 .15 .2 .25 .3 .35 .4 .45 .5 .55 .60 /*
+		*/.65 .7 .75 .8 .85 .90 .95) variance
+
+		forvalues q = 1/19{
+			local qte_`x'_q`q' = _b[Quantile_`q']
+		}
+
+
+	}
+	
+	forvalues q=1/19{
+		local qte_delta_q`q'_`nn' = 	`qte_1_q`q'' - `qte_0_q`q''
+	}
+	
+	
+}
+
+
+clear
+set obs  100
+
+forvalues q=1/19{
+	gen qte_q`q' = .	
+}
+
+
+forvalues x=1/100{
+	forvalues q=1/19{
+		*dis `qte_delta_q`q'_`x'' 
+		replace qte_q`q' = `qte_delta_q`q'_`x'' if _n == `x'
+	}
+
+	
+}
 
