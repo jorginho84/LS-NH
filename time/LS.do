@@ -3,9 +3,7 @@ This do-file computes the effect of New Hope on labor supply using UI administra
 
 The main figure: Trends of employment probability by groups, quarters since RA, and employment status at baseline
 
-This do-file may also compute:
--the difference in employment by quarters since RA
--difference and levels by quarters in calendar time
+It also computes a test of differential effects
 
 */
 
@@ -431,7 +429,7 @@ else{
 restore
 *There are 53 missing values
 		
-
+preserve
 collapse (mean) emp*, by(p_assign d_young)
 reshape long emp, i(p_assign d_young) j(quarter)
 replace quarter=quarter-8 /*back to the original number*/
@@ -495,6 +493,29 @@ else{
 	graph export "$results/LS_admin_qra_level_young.pdf", as(pdf) replace
 }
 
+restore
 
 
 
+
+
+******************************************************************
+******************************************************************
+/*Effects of differential treatment effects*/
+******************************************************************
+******************************************************************
+
+*make panel data
+keep emp* d_young sampleid p_assign
+reshape long emp, i(sampleid) j(quarter)
+replace quarter=quarter-8 /*back to the original number*/
+gen d_ra = 0 if p_assign == "C"
+replace d_ra = 1 if p_assign == "E"
+
+*show me treatment effects and save a log file with test of diff effects
+log using "$results/test_pval", replace text
+xi: reg emp d_ra  if quarter<=12 & quarter>=0 & d_young == 0
+xi: reg emp d_ra  if quarter<=12 & quarter>=0 & d_young == 1
+xi: reg emp d_ra d_young c.d_young#c.d_ra if quarter<=12 & quarter>=0, vce(`SE')
+test c.d_young#c.d_ra=0
+log close

@@ -130,6 +130,11 @@ egen welfare=rowtotal(afdc_y fs_y)
 egen eitc=rowtotal(eitc_fed_y eitc_state_y)
 
 
+*This is for computing incremental earnings
+log using "$results/ls/mean_earnings.txt", replace text
+sum gross_y if year<=2 & p_assign == "C" & d_young ==1
+log close
+
 *************************************************************************************
 *************************************************************************************
 *************************************************************************************
