@@ -33,13 +33,8 @@ controls: choose if regression should include controls for parents: age, ethnici
 
 local controls=0
 
-*Choose: 1 if produce income graph for employed at baseline
-*Choose: 0 if produce income graph for unemployed at baseline
-*Choose: 3 if total
-local emp=3
 
 use "$results/Income/data_income.dta", clear
-
 drop total_income_y0 gross_y0 gross_nominal_y0 grossv2_y0 employment_y0 /*
 */ fs_y0 afdc_y0 sup_y0 eitc_state_y0 eitc_fed_y0
 forvalues x=1/9{
@@ -63,12 +58,6 @@ forvalues x=1/9{
 drop total_income_y10
 
 
-*****************************************
-*****************************************
-*THE FIGURES
-*****************************************
-*****************************************
-
 *Dropping 50 adults with no information on their children
 count
 qui: do "$codes/income/drop_50.do"
@@ -82,14 +71,6 @@ if `controls'==1{
 	local control_var age_ra i.marital i.ethnic d_HS2 higrade i.pastern2
 }
 
-*Sample
-if `emp'==1{
-	keep if emp_baseline==1
-}
-else if `emp'==0{
-	keep if emp_baseline==0
-
-}
 
 *dummy RA for ivqte
 gen d_ra = .
@@ -158,62 +139,81 @@ egen eitc=rowtotal(eitc_fed_y eitc_state_y)
 *************************************************************************************
 *************************************************************************************
 
-
 *For t<=2
 forvalues x=0/2{/*the sample loop*/
 
 	if `x'<=1{
 
-		qui xi: reg total_income_y i.p_assign if d_young==`x' & year<=2, vce(`SE')
-		local dec0_emp`x' = _b[_Ip_assign_2]
+		foreach inc in total_income_y gross_y welfare eitc sup_y{
+			qui: sum `inc' if d_young==`x' & year<=2
+			local mean_`inc'_`x' =string(round( r(mean)/1000,0.001),"%9.3f")
+			qui xi: reg `inc' i.p_assign `control_var' if d_young==`x' & year<=2, vce(`SE')
+			local te_`inc'_`x' =string(round( _b[_Ip_assign_2]/1000,0.001),"%9.3f")
+			local se_`inc'_`x' =string(round( _se[_Ip_assign_2]/1000,0.001),"%9.3f")
+			qui: test _Ip_assign_2=0
+			local pv=r(p)
 
-		qui xi: reg gross_y i.p_assign if d_young==`x' & year<=2, vce(`SE')
-		local dec1_emp`x' = _b[_Ip_assign_2]
+			if `pv'<=.01{
+				local ast_`inc'_`x' ="***"	
+			}
+			else if `pv'<=.05 {
+				local ast_`inc'_`x' ="**"		
+			}
+			else if `pv'<=.1 {
+				local ast_`inc_`x'' ="*"		
+			}
+			else{
+				local ast_`inc'_`x'=""
+			}
 
-		qui xi: reg welfare i.p_assign if d_young==`x' & year<=2, vce(`SE')
-		local dec2_emp`x' = _b[_Ip_assign_2]
+			
 
-		qui xi: reg eitc i.p_assign if d_young==`x' & year<=2, vce(`SE')
-		local dec3_emp`x' = _b[_Ip_assign_2]
 
-		qui xi: reg sup_y i.p_assign if d_young==`x' & year<=2, vce(`SE')
-		local dec4_emp`x' = _b[_Ip_assign_2]
 
-		*shares
-		qui xi: reg total_income_y i.p_assign if d_young==`x' & year<=2, vce(`SE')
-		local tot = _b[_Ip_assign_2]
-
-		forvalues j=1/4{
-			local dec`j'_emp`x'=string(round(`dec`j'_emp`x''/1000,0.001),"%9.3f")/*rounding*/
 		}
+
+		
 		
 
 
 	}
 	else{
 
-		qui xi: reg total_income_y i.p_assign if year<=2, vce(`SE')
-		local dec0_emp`x' = _b[_Ip_assign_2]
+		foreach inc in total_income_y gross_y welfare eitc sup_y{
+			qui: sum `inc' if year<=2
+			local mean_`inc'_`x' =string(round( r(mean)/1000,0.001),"%9.3f")
+			qui xi: reg `inc' i.p_assign `control_var' if year<=2, vce(`SE')
+			local te_`inc'_`x' =string(round( _b[_Ip_assign_2]/1000,0.001),"%9.3f")
+			local se_`inc'_`x' =string(round( _se[_Ip_assign_2]/1000,0.001),"%9.3f")
+			qui: test _Ip_assign_2=0
+			local pv=r(p)
 
-		qui xi: reg gross_y i.p_assign if year<=2, vce(`SE')
-		local dec1_emp`x' = _b[_Ip_assign_2]
+			if `pv'<=.01{
+				local ast_`inc'_`x' ="***"	
+			}
+			else if `pv'<=.05 {
+				local ast_`inc'_`x' ="**"		
+			}
+			else if `pv'<=.1 {
+				local ast_`inc'_`x' ="*"		
+			}
+			else{
+				local ast_`inc'_`x'=""
+			}
 
-		qui xi: reg welfare i.p_assign if year<=2, vce(`SE')
-		local dec2_emp`x' = _b[_Ip_assign_2]
 
-		qui xi: reg eitc i.p_assign if year<=2, vce(`SE')
-		local dec3_emp`x' = _b[_Ip_assign_2]
 
-		qui xi: reg sup_y i.p_assign if year<=2, vce(`SE')
-		local dec4_emp`x' = _b[_Ip_assign_2]
+		    *testing for diff effects
+			qui xi: reg `inc' d_ra d_young c.d_ra#c.d_young  `control_var'  if year<=2, vce(`SE')
+			qui: test c.d_ra#c.d_young=0
+			local pv_`inc'=string(round(r(p),0.001),"%9.3f")
 
-		*shares
-		qui xi: reg total_income_y i.p_assign if year<=2, vce(`SE')
-		local tot = _b[_Ip_assign_2]
 
-		forvalues j=1/4{
-			local dec`j'_emp`x'=string(round(`dec`j'_emp`x''/1000,0.001),"%9.3f")/*rounding*/
+
 		}
+
+	
+	
 		
 	}
 		
@@ -222,7 +222,65 @@ forvalues x=0/2{/*the sample loop*/
 
 
 
+*************************************************************************************
+*************************************************************************************
+*************************************************************************************
+/*GENERATING TABLE*/
 
+file open tab_dec using "$results/Income/table_income.tex", write replace
+file write tab_dec "\begin{tabular}{llccccc}"_n
+file write tab_dec "\hline"_n
+file write tab_dec "Variable &       & Old &       & Young   &       & Overall \bigstrut\\"_n
+file write tab_dec "\cline{1-1}\cline{3-7}      &       &       &       &       &       &  \bigstrut[t]\\"_n
+
+file write tab_dec "\textbf{Panel A.} &       & \multicolumn{5}{c}{\textbf{Earnings}} \\"_n
+file write tab_dec "Treatment effect &       & `te_gross_y_0'`ast_gross_y_0'   &       & `te_gross_y_1'`ast_gross_y_1'    &       & `te_gross_y_2'`ast_gross_y_2'  \\"_n
+file write tab_dec "&       & (`se_gross_y_0')   &       & (`se_gross_y_1')   &      & (`se_gross_y_2') \\"_n
+file write tab_dec "Dependent mean &       & `mean_gross_y_0'   &       & `mean_gross_y_1'   &       & `mean_gross_y_2' \\"_n
+file write tab_dec "p-val for diff. effects &       &   \multicolumn{5}{c}{ `pv_gross_y'} \\"_n
+file write tab_dec "      &       &       &       &       &       &  \\"_n
+
+file write tab_dec "\textbf{Panel B.} &       & \multicolumn{5}{c}{\textbf{Welfare}} \\"_n
+file write tab_dec "Treatment effect &       & `te_welfare_0'`ast_welfare_0'   &       & `te_welfare_1'`ast_welfare_1'   &       & `te_welfare_2'`ast_welfare_2' \\"_n
+file write tab_dec "&       & (`se_welfare_0')   &       & (`se_welfare_1')   &      & (`se_welfare_2') \\"_n
+file write tab_dec "Dependent mean &       & `mean_welfare_0'   &       & `mean_welfare_1'   &       & `mean_welfare_2' \\"_n
+file write tab_dec "p-val for diff. effects &       &  \multicolumn{5}{c}{ `pv_welfare'} \\"_n
+file write tab_dec "      &       &       &       &       &       &  \\"_n
+
+file write tab_dec "\textbf{Panel C.} &       & \multicolumn{5}{c}{\textbf{EITC}} \\"_n
+file write tab_dec "Treatment effect &       & `te_eitc_0'`ast_eitc_0'   &       & `te_eitc_1'`ast_eitc_1'   &       & `te_eitc_2'`ast_eitc_2' \\"_n
+file write tab_dec "&       & (`se_eitc_0')   &       & (`se_eitc_1')   &      & (`se_eitc_2') \\"_n
+file write tab_dec "Dependent mean &       & `mean_eitc_0'   &       & `mean_eitc_1'   &       & `mean_eitc_2' \\"_n
+file write tab_dec "p-val for diff. effects &       &   \multicolumn{5}{c}{`pv_eitc'} \\"_n
+file write tab_dec "      &       &       &       &       &       &  \\"_n
+
+file write tab_dec "\textbf{Panel D.} &       & \multicolumn{5}{c}{\textbf{New Hope}} \\"_n
+file write tab_dec "Treatment effect &       & `te_sup_y_0'`ast_sup_y_0'   &       & `te_sup_y_1'`ast_sup_y_1'   &       & `te_sup_y_2'`ast_sup_y_2' \\"_n
+file write tab_dec "&       & (`se_sup_y_0')   &       & (`se_sup_y_1')   &      & (`se_sup_y_2') \\"_n
+file write tab_dec "Dependent mean &       & `mean_sup_y_0'   &       & `mean_sup_y_1'   &       & `mean_sup_y_2' \\"_n
+file write tab_dec "p-val for diff. effects &       &   \multicolumn{5}{c}{ `pv_sup_y'} \\"_n
+
+file write tab_dec "      &       &       &       &       &       &  \\"_n
+
+
+file write tab_dec "\textbf{Panel E.} &       & \multicolumn{5}{c}{\textbf{Total income}} \\"_n
+file write tab_dec "Treatment effect &       & `te_total_income_y_0'`ast_total_income_y_0'   &       & `te_total_income_y_1'`ast_total_income_y_1'   &       & `te_total_income_y_2'`ast_total_income_y_2' \\"_n
+file write tab_dec "&       & (`se_total_income_y_0')   &       & (`se_total_income_y_1')   &      & (`se_total_income_y_2') \\"_n
+file write tab_dec "Dependent mean &       & `mean_total_income_y_0'   &       & `mean_total_income_y_1'   &       & `mean_total_income_y_2' \\"_n
+file write tab_dec "p-val for diff effects &       &   \multicolumn{5}{c}{ `pv_total_income_y'} \\"_n
+file write tab_dec "      &       &       &       &       &       &  \\"_n
+
+file write tab_dec "\hline"_n
+file write tab_dec "\end{tabular}"_n
+file close tab_dec
+
+
+display `pv_gross_y'
+
+
+*************************************************************************************
+*************************************************************************************
+*************************************************************************************
 
 
 
