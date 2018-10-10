@@ -250,6 +250,11 @@ preserve
 keep hours* d_ra sampleid d_young
 reshape long hours, i(sampleid) j(quarter)
 
+
+log using "$results/mean_hours.txt", replace text
+sum hours if d_ra==0
+log close
+
 *for all
 qui: ivqte hours (d_ra), quantiles(.05 .1 .15 .2 .25 .3 .35 .4 .45 .5 .55 .60 .65 .7 .75 .8 .85 .90 .95) variance
 		
@@ -273,6 +278,10 @@ forvalues q = 1/19{
 
 *by sample
 forvalues x=0/1{
+
+	log using "$results/mean_hours.txt", append text
+	sum hours if d_ra==0 & d_young==`x'
+	log close
 
 	qui: ivqte hours (d_ra) if d_young==`x', quantiles(.05 .1 .15 .2 .25 .3 .35 .4 .45 .5 .55 .60 /*
 	*/.65 .7 .75 .8 .85 .90 .95) variance
