@@ -168,6 +168,7 @@ destring c68* c69* c70* c73 piq113da  piq114* piq119a piq128a piq128b tq17a tq17
 *Age at baseline
 destring agechild, force replace
 gen age_t0=agechild-2
+drop if age_t0<0
 *due to rounding errors, ages 0 and 11 are 1 and 10
 replace age_t0=1 if age_t0==0
 replace age_t0=10 if age_t0==11
@@ -178,7 +179,6 @@ local CC_use c68* c69*
 
 
 /*Number of months on each child care: t=1*/
-
 gen CC_HS_months=c70a_1 if c69a_2==child
 replace CC_HS_months=c70a_2 if c69a_4==child
 
@@ -566,11 +566,13 @@ save "$results/sample_model_theta_v2.dta", replace
 *This is the sample to start the simulations
 keep if c1!=. & piinvyy!=. & epiinvyy!=.
 
-stop!
+
 
 foreach x of varlist d_RA age_ra d_marital_2 d_HS2 nkids_baseline age_t0 d_black {
 	drop if `x'==.
 }
+
+
 
 save "$results/sample_model_v2.dta", replace
 outsheet using "$results/sample_model_v2.csv", comma  replace
