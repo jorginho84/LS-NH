@@ -19,6 +19,6 @@ cpi=[148.4,153.0,156.7,159.3,162.7,168.3,172.8,174.9,178.3,182.6,
 
 
 #Saving the list
-pickle.dump(cpi,open('C:\\Users\\jrodriguezo\\Dropbox\\Chicago\\Research\\Human capital and the household\\codes\\DDCM-NH\\model\\model_v2\\simulate_sample\\cpi.p','wb'))
+pickle.dump(cpi,open('/home/jrodriguez/understanding_NH/codes/model/simulate_sample/cpi.p','wb'))
 
 
