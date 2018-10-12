@@ -1,5 +1,5 @@
 """
-execfile('snap_param.py')
+exec(open('snap_param.py').read())
 This file generates a list of snap parameters
 """
 

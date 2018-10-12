@@ -22,7 +22,7 @@ import gc
 from scipy import interpolate
 from pathos.multiprocessing import ProcessPool
 #sys.path.append("C:\\Users\\Jorge\\Dropbox\\Chicago\\Research\\Human capital and the household\]codes\\model")
-sys.path.append("C:\\Users\\jrodriguezo\\Dropbox\\Chicago\\Research\\Human capital and the household\\codes\\DDCM-NH\\model\\model_v2\\simulate_sample")
+sys.path.append("/home/jrodriguez/understanding_NH/codes/model/simulate_sample")
 import utility as util
 import gridemax
 import int_linear
@@ -454,7 +454,7 @@ class Emaxt:
 
 		"""	
 		
-		"""
+	
 		def emax_gen(j):
 			
 			for t in range(j,0,-1):
@@ -491,9 +491,9 @@ class Emaxt:
 		pool.clear()
 		
 		
+		
+		
 		"""
-		
-		
 		list_emax = []
 		for j in range(7,19):
 			print ('Im in emax j ', j)
@@ -518,7 +518,7 @@ class Emaxt:
 			list_emax.append([emax_dic,emax_values])
 
 		
-		
+		"""
 		
 		
 

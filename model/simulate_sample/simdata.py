@@ -11,7 +11,7 @@ import itertools
 import sys, os
 from scipy import stats
 from scipy import interpolate
-sys.path.append("C:\\Users\\jrodriguezo\\Dropbox\\Chicago\\Research\\Human capital and the household\\codes\\DDCM-NH\\model\\model_v2\\simulate_sample")
+sys.path.append("/home/jrodriguez/understanding_NH/codes/model/simulate_sample")
 import utility as util
 import int_linear
 import time

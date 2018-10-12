@@ -1,9 +1,8 @@
 """
-execfile('cpi.py')
-
+exec(open('cpi.py').read())
 This file stores the CPI index values
 """
-from __future__ import division #omit for python 3.x
+·from __future__ import division #omit for python 3.x
 import numpy as np
 import pandas as pd
 import itertools

@@ -1,5 +1,6 @@
 """
-execfile('afdc_param.py')
+exec(open('afdc_param.py').read())
+
 This file generates a list of AFDC parameters
 The paramaters are used in the t=0 AFDC computation.
 The parameters vay by family size
@@ -7,7 +8,7 @@ The parameters vay by family size
 Source: Welfare Rules Database
 """
 
-from __future__ import division #omit for python 3.x
+#from __future__ import division #omit for python 3.x
 import numpy as np
 import pandas as pd
 import itertools

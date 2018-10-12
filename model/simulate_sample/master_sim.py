@@ -1,5 +1,6 @@
 """
-execfile('master_sim.py')
+exec(open('master_sim.py').read())
+
 
 (1) Defines a set of parameters and X's
 (2) Defines a grid of state variables
@@ -26,7 +27,7 @@ pip2.7 install --user line_profiler
 
 
 """
-from __future__ import division #omit for python 3.x
+#from __future__ import division #omit for python 3.x
 import numpy as np
 import pandas as pd
 import pickle
@@ -38,7 +39,7 @@ import matplotlib.pyplot as plt
 import time
 from pathos.multiprocessing import ProcessPool
 #sys.path.append("C:\\Users\\Jorge\\Dropbox\\Chicago\\Research\\Human capital and the household\]codes\\model")
-sys.path.append("/mnt/Research/nealresearch/new-hope-secure/newhopemount/codes/model_v2/simulate_sample")
+sys.path.append("/home/jrodriguez/understanding_NH/codes/model/simulate_sample")
 import utility as util
 import gridemax
 import int_linear
@@ -50,31 +51,34 @@ np.random.seed(1);
 #Sample size
 #N=315
 
-betas_nelder=np.load('/mnt/Research/nealresearch/new-hope-secure/newhopemount/results/betas_modelv19.npy')
+betas_nelder=np.load('/home/jrodriguez/understanding_NH/results/Model/betas_modelv24.npy')
 
 #Number of periods where all children are less than or equal to 18
 nperiods = 8
 
 #Utility function
-eta=betas_nelder[0]
-alphap=betas_nelder[1]
-alphaf=betas_nelder[2]
+eta = betas_nelder[0]
+alphap = betas_nelder[1]
+alphaf = betas_nelder[2]
 
 #wage process
-wagep_betas=np.array([0.15,0.08,1.11,0.45,0.36]).reshape((5,1))
+wagep_betas=np.array([betas_nelder[3],betas_nelder[4],betas_nelder[5],
+	betas_nelder[6],betas_nelder[7]]).reshape((5,1))
+
 
 #Production function [young,old]
-gamma1= betas_nelder[9]
-gamma2= betas_nelder[10]
-gamma3= betas_nelder[11]
-tfp=betas_nelder[12]
+gamma1= betas_nelder[8]
+gamma2= betas_nelder[9]
+gamma3= betas_nelder[10]
+tfp=betas_nelder[11]
 sigma2theta=1
 
-kappas=[[betas_nelder[13],betas_nelder[14],betas_nelder[15],betas_nelder[16]],
-[betas_nelder[17],betas_nelder[18],betas_nelder[19],betas_nelder[20]]]
+kappas=[[betas_nelder[12],betas_nelder[13],betas_nelder[14],betas_nelder[15]],
+[betas_nelder[16],betas_nelder[17],betas_nelder[18],betas_nelder[19]]]
 
 #initial theta
-rho_theta_epsilon = betas_nelder[21]
+rho_theta_epsilon = betas_nelder[20]
+
 #First measure is normalized. starting arbitrary values
 #All factor loadings are normalized
 lambdas=[1,1]
@@ -90,7 +94,7 @@ psnap=.70
 
 #Data
 #X_aux=pd.read_csv('C:\\Users\\Jorge\\Dropbox\\Chicago\\Research\\Human capital and the household\\results\\Model\\Xs.csv')
-X_aux=pd.read_csv('/mnt/Research/nealresearch/new-hope-secure/newhopemount/results/Model/sample_model_v2.csv')
+X_aux=pd.read_csv('/home/jrodriguez/understanding_NH/results/Model/sample_model_v2.csv')
 x_df=X_aux
 
 #Sample size 
@@ -104,12 +108,12 @@ x_w=x_df[ ['d_HS2', 'constant' ] ].values
 #Data for marriage process 
 #Parameters: marriage. Last one is the constant
 x_m=x_df[ ['age_ra', 'constant']   ].values
-marriagep_betas=pd.read_csv('/mnt/Research/nealresearch/new-hope-secure/newhopemount/results/marriage_process/betas_m_v2.csv').values
+marriagep_betas=pd.read_csv('/home/jrodriguez/understanding_NH/results/Model/marriage_process/betas_m_v2.csv').values
 
 #Data for fertility process (only at X0)
 #Parameters: kids. last one is the constant
 x_k=x_df[ ['age_ra', 'constant']   ].values
-kidsp_betas=pd.read_csv('/mnt/Research/nealresearch/new-hope-secure/newhopemount/results/kids_process/betas_kids_v2.csv').values
+kidsp_betas=pd.read_csv('/home/jrodriguez/understanding_NH/results/Model/kids_process/betas_kids_v2.csv').values
 
 #Minimum set of x's (for interpolation)
 x_wmk=x_df[  ['age_ra','age_ra2', 'd_HS2', 'constant'] ].values
@@ -119,16 +123,16 @@ passign=x_df[ ['d_RA']   ].values
 
 
 #The EITC parameters
-eitc_list = pickle.load( open( '/mnt/Research/nealresearch/new-hope-secure/newhopemount/codes/model_v2/simulate_sample/eitc_list.p', 'rb' ) )
+eitc_list = pickle.load( open( '/home/jrodriguez/understanding_NH/codes/model/simulate_sample/eitc_list.p', 'rb' ) )
 
 #The AFDC parameters
-afdc_list = pickle.load( open( '/mnt/Research/nealresearch/new-hope-secure/newhopemount/codes/model_v2/simulate_sample/afdc_list.p', 'rb' ) )
+afdc_list = pickle.load( open( '/home/jrodriguez/understanding_NH/codes/model/simulate_sample/afdc_list.p', 'rb' ) )
 
 #The SNAP parameters
-snap_list = pickle.load( open( '/mnt/Research/nealresearch/new-hope-secure/newhopemount/codes/model_v2/simulate_sample/snap_list.p', 'rb' ) )
+snap_list = pickle.load( open( '/home/jrodriguez/understanding_NH/codes/model/simulate_sample/snap_list.p', 'rb' ) )
 
 #CPI index
-cpi =  pickle.load( open( '/mnt/Research/nealresearch/new-hope-secure/newhopemount/codes/model_v2/simulate_sample/cpi.p', 'rb' ) )
+cpi =  pickle.load( open( '/home/jrodriguez/understanding_NH/codes/model/simulate_sample/cpi.p', 'rb' ) )
 
 #Here: the estimates from the auxiliary model
 ###
@@ -170,12 +174,12 @@ model = util.Utility(param,N,x_w,x_m,x_k,passign,nkids0,married0,hours,childcare
 
 
 ##############Computing EmaxT#####################
-print ''
-print ''
-print 'Getting a dictionary of emax'
+print ('')
+print ('')
+print ('Getting a dictionary of emax')
 start_time = time.time()
-print ''
-print ''
+print ('')
+print ('')
 
 D=50
 np.random.seed(2)
@@ -184,23 +188,23 @@ emax_dic=emax_function_in.recursive() #8 emax (t=1 to t=8)
 
 
 time_emax=time.time() - start_time
-print ''
-print ''
-print 'Done with procedure in:'
+print ('')
+print ('')
+print ('Done with procedure in:')
 print("--- %s seconds ---" % (time_emax))
-print ''
-print ''
+print ('')
+print ('')
 
 
 
 
 #########Simulating data###############
-print ''
-print ''
-print 'Simulating fake data'
+print ('')
+print ('')
+print ('Simulating fake data')
 start_time = time.time()
-print ''
-print ''
+print ('')
+print ('')
 
 
 sim_ins=simdata.SimData(N,param,emax_dic,x_w,x_m,x_k,x_wmk,passign,nkids0,married0,agech0,hours_p,hours_f,wr,cs,ws,model)
@@ -208,12 +212,12 @@ data_dic=sim_ins.fake_data(8)
 
 
 time_sim=time.time() - start_time
-print ''
-print ''
-print 'Done with procedure in:'
+print ('')
+print ('')
+print ('Done with procedure in:')
 print("--- %s seconds ---" % (time_sim))
-print ''
-print ''
+print ('')
+print ('')
 
 #warning: for individuals with children over 18 yo, the problem is not well defined.
 #look only until t=8 years after RA
