@@ -181,7 +181,7 @@ start_time = time.time()
 print ('')
 print ('')
 
-D=50
+D=40
 np.random.seed(2)
 emax_function_in=emax.Emaxt(param,D,dict_grid,hours_p,hours_f,wr,cs,ws,model)
 emax_dic=emax_function_in.recursive() #8 emax (t=1 to t=8)
