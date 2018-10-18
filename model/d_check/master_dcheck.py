@@ -201,7 +201,7 @@ sd_emax_choice0 = []
 
 for k in range(len(D)):
 	av_emax_choice0.append(av_emax[k][0])
-	sd_emax_choice0.append(sd_emax[k][0])
+	sd_emax_choice0.append(se_emax[k][0])
 
 fig, ax=plt.subplots()
 plot1=ax.plot(D,av_emax_choice0,'k',alpha=0.9)
