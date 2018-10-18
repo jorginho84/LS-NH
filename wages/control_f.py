@@ -1,21 +1,11 @@
 """
-exec(open('fit.py').read())
+exec(open('control_f.py').read())
 
-This file computes stats to validate model
 
-It uses:
-ate_theta.py
-oprobit.py
-table_aux.py
-ate_emp.py
-ate_cc.py
-ssrs_obs.do
-ssrs_sim.do
-ate_cc.do
-ate_emp.do
+This file computes propensiy scores estimations for all individuals
+using the structure of the model
 
 """
-
 import numpy as np
 import pandas as pd
 import pickle
@@ -170,7 +160,7 @@ se_vector  = np.sqrt(np.diagonal(var_cov))
 dict_grid=gridemax.grid()
 
 #For montercarlo integration
-D=50
+D=10
 
 #For II procedure
 M=1000
@@ -216,51 +206,16 @@ print("--- %s seconds ---" % (time_emax))
 print('')
 print('')
 choices = output_ins.samples(param0,emax_instance,model)
-dic_betas = output_ins.aux_model(choices)
 
-#Getting the simulated betas
-#utility_aux
-beta_childcare=np.mean(dic_betas['beta_childcare'],axis=0) #1x1
-beta_hours1=np.mean(dic_betas['beta_hours1'],axis=0) #1x1
-beta_hours2=np.mean(dic_betas['beta_hours2'],axis=0) #1x1
-beta_wagep=np.mean(dic_betas['beta_wagep'],axis=1) # 6 x 1
-beta_kappas_t2=np.mean(dic_betas['beta_kappas_t2'],axis=1) #4 x 3
-beta_kappas_t5=np.mean(dic_betas['beta_kappas_t5'],axis=1) #4 x 1
-beta_inputs=np.mean(dic_betas['beta_inputs'],axis=1) #5 x 1
-betas_init_prod=np.mean(dic_betas['betas_init_prod'],axis=1) #1 x 1
+work = (choices['choice_matrix']==1) | (choices['choice_matrix']==2) | (choices['choice_matrix']==4) | (choices['choice_matrix']==5)
+pscore = np.mean(work,axis=2)
 
-#The sample: with young children at t=2
-boo_sample = agech_t2<=6
-
-#################################################################################
-#################################################################################
-#FIGURE: ATE ON INCOME#
-exec(open("/home/jrodriguez/understanding_NH/codes/model/fit/ate_inc.py").read())
-
-
-#################################################################################
-#################################################################################
-#FIGURE: ATE ON CHILD CARE#
-exec(open("/home/jrodriguez/understanding_NH/codes/model/fit/ate_cc.py").read())
-
-
-#################################################################################
-#################################################################################
-#FIGURE: ATE ON EMPLOYMENT#
-exec(open("/home/jrodriguez/understanding_NH/codes/model/fit/ate_emp.py").read())
-
-
-#################################################################################
-#################################################################################
-#FIGURE: ATE ON THETA#
-exec(open("/home/jrodriguez/understanding_NH/codes/model/fit/ate_theta.py").read())
-
-
-#################################################################################
-#################################################################################
-#TABLE FIT: target moments#
-exec(open("/home/jrodriguez/understanding_NH/codes/model/fit/table_aux.py").read())
-
-
+#Calling stata
+data_frame = pd.DataFrame({'pscore0': pscore[:,0],'pscore1': pscore[:,1],
+'pscore4': pscore[:,4],'pscore7': pscore[:,7] })
+data_frame.to_stata('/home/jrodriguez/understanding_NH/results/wages/pscores.dta')
+dofile = "/home/jrodriguez/understanding_NH/codes/wages/control_f.do"
+cmd = ["stata-se", "do", dofile]
+subprocess.call(cmd)
 
 

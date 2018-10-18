@@ -158,7 +158,7 @@ Recovering Child care and SSRS
 
 use "$databases/Youth_original2.dta", clear
 qui: do "$codes/data_youth.do"
-keep sampleid child agechild/* identifiers
+keep sampleid child agechild kid1dats p_radaym/* identifiers
 */ c68* c69* c70* c73 /*CC use and payments (year 2)
 */ piq113da  piq114* piq119a piq128a piq128b/* CC use and payments (year 5)    
 */ tq17a tq17b tq17c tq17h /*skills t1
@@ -166,6 +166,21 @@ keep sampleid child agechild/* identifiers
 destring c68* c69* c70* c73 piq113da  piq114* piq119a piq128a piq128b tq17a tq17b tq17c tq17h t2q17a etsq13a, force replace
 
 *Age at baseline
+destring kid1dats, force replace
+format kid1dats %td
+gen year_birth=yofd(kid1dats)
+drop kid1dats
+
+*child age at baseline
+gen year_ra = substr(string(p_radaym),1,2)
+destring year_ra, force replace
+replace year_ra = 1900 + year_ra
+
+gen age_t0=  year_ra - year_birth
+gen age_t02=age_t0^2
+
+
+/*
 destring agechild, force replace
 gen age_t0=agechild-2
 drop if age_t0<0
@@ -173,6 +188,7 @@ drop if age_t0<0
 replace age_t0=1 if age_t0==0
 replace age_t0=10 if age_t0==11
 gen age_t02=age_t0^2
+*/
 
 /*Local labels: use these in regressions*/
 local CC_use c68* c69*

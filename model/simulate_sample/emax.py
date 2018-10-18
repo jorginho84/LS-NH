@@ -485,7 +485,7 @@ class Emaxt:
 
 		#7: old child (11 years old) solves for 7 emax 
 		#19: young child (0 years old) solves for 18 emax
-		list_emax = pool.map(emax_gen,range(8,18))
+		list_emax = pool.map(emax_gen,range(8,18),chunksize=1)
 		pool.close()
 		pool.join()
 		pool.clear()
