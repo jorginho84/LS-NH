@@ -571,6 +571,9 @@ gen delta_emp=d_emp_t1-d_emp_t0
 **Using d_HS based on highgrade: correlates more with wage
 gen d_HS2=higrade>=12
 
+*Age of child probably wrong
+drop if age_t0<1 | age_t0>11
+
 keep sampleid child d_RA p_assign age_ra age_ra2 d_marital* d_HS d_HS2 c91 /*
 */ nkids* hours_t* d_CC* constant emp_baseline  delta_emp skills_* c1 piinvyy /*
 */ epiinvyy total_income_y* married* cc_pay* gross_y* gross_nominal_y* grossv2_y* /*
