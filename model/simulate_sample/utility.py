@@ -444,15 +444,15 @@ class Utility(object):
 		#child care cost
 		cc_cost = np.zeros(self.N)
 
-		cc_cost[young & boo_nfree] = price[young & boo_nfree,0].copy()
+		cc_cost[boo_nfree] = price[boo_nfree,0].copy()
 		if periodt<=2:
 			
 			if self.cs==1:
 				if self.wr==1:
-					cc_cost[boo_ra & d_full & boo_nfree & young] = copayment[boo_ra & d_full & boo_nfree & young].copy()
+					cc_cost[boo_ra & d_full & boo_nfree] = copayment[boo_ra & d_full & boo_nfree ].copy()
 					
 				else:
-					cc_cost[boo_ra &  boo_nfree & young] = copayment[boo_ra &  boo_nfree & young].copy()
+					cc_cost[boo_ra &  boo_nfree] = copayment[boo_ra &  boo_nfree].copy()
 					
 
 				nh_cost = cc*(price[:,0] - cc_cost)
@@ -463,7 +463,7 @@ class Utility(object):
 
 		else:
 			if self.cs==1:
-				cc_cost[boo_nfree & young] = copayment[boo_nfree & young].copy()
+				cc_cost[boo_nfree] = copayment[boo_nfree].copy()
 
 			nh_cost = np.zeros(self.N)
 
@@ -499,11 +499,10 @@ class Utility(object):
 		boo_u = h == 0
 
 		tch[agech<=5] = cc[agech<=5]*(168 - self.hours_f) + (1-cc[agech<=5])*(168 - h[agech<=5] ) 
-		tch[agech>5] = 133 - h[agech>5] 
+		tch[agech>5] = cc[agech>5]*(133 - self.hours_f) + (1-cc[agech>5])*(133 - h[agech>5] ) 
 		tch=np.log(tch)
 
-		
-				
+						
 		#Parameters
 		gamma1=self.param.gamma1
 		gamma2=self.param.gamma2
@@ -514,10 +513,13 @@ class Utility(object):
 
 		#The production of HC: (young, cc=0), (young,cc1), (old)
 		boo_age=agech<=5
-		theta1 = tfp*cc*boo_age + gamma1*np.log(theta0) + gamma2*incomepc +	gamma3*tch
+		theta1[agech<=5] = tfp[0]*cc[agech<=5] + gamma1[0]*np.log(theta0[agech<=5]) + gamma2[0]*incomepc[agech<=5] + gamma3[0]*tch[agech<=5]
+		theta1[agech>5] = tfp[1]*cc[agech>5] + gamma1[1]*np.log(theta0[agech>5]) + gamma2[1]*incomepc[agech>5] + gamma3[1]*tch[agech>5]
 			
 		#adjustment for E[theta = 0]
-		alpha = - np.mean(incomepc)*gamma2 - np.mean(tch)*gamma3  
+		alpha = np.zeros(self.N)
+		alpha[agech<=5] = - np.mean(incomepc[agech<=5])*gamma2[0] - np.mean(tch[agech<=5])*gamma3[0]
+		alpha[agech>5] = - np.mean(incomepc[agech>5])*gamma2[1] - np.mean(tch[agech>5])*gamma3[1]
 
 		return np.exp(theta1 + alpha)
 
@@ -530,8 +532,7 @@ class Utility(object):
 
 		#age of child
 		agech=np.reshape(self.age_t0,(self.N)) + periodt
-		d_age = agech<=5
-
+		
 		#log-theta
 		ltheta=np.log(thetat)
 

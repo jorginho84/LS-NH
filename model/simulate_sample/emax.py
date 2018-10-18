@@ -204,13 +204,8 @@ class Emaxt:
 
 
 			#obtaining max over choices by random schocks: young vs old
-			max_ut=np.zeros((ngrid,self.D))
-			max_ut[agech<=5,:]=np.max(u_vec[agech<=5,:,:],axis=2) #young
-			max_ut[agech>5,:]=np.max(u_vec[agech>5,:,0:3],axis=2) #old
-
+			max_ut=np.max(u_vec,axis=2) #young
 			
-
-
 			#This is the emax for a given (for a given at choice T-1)
 			av_max_ut=np.average(max_ut,axis=1)
 
@@ -406,11 +401,8 @@ class Emaxt:
 				
 
 			#obtaining max over choices by random shock/choice at t-1. Young vs old
-			max_ut=np.zeros((ngrid,self.D))
-			max_ut[agech<=5,:]=np.max(u_vec[agech<=5,:,:],axis=2) #young
-			max_ut[agech>5,:]=np.max(u_vec[agech>5,:,0:3],axis=2) #old
-
-			
+			max_ut=np.max(u_vec,axis=2) #young
+					
 
 			#This is the emax for a given choice at t-1
 			av_max_ut=np.average(max_ut,axis=1)
@@ -453,6 +445,7 @@ class Emaxt:
 		
 
 		"""	
+		
 		
 	
 		def emax_gen(j):
