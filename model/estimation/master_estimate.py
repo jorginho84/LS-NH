@@ -39,7 +39,7 @@ betas_nelder=np.load('/home/jrodriguez/understanding_NH/results/Model/betas_mode
 nperiods = 8
 
 #Utility function
-eta = betas_nelder[0]
+eta = 0.1
 alphap = betas_nelder[1]
 alphaf = betas_nelder[2]
 
@@ -48,10 +48,10 @@ wagep_betas=np.array([betas_nelder[3],betas_nelder[4],betas_nelder[5],
 	betas_nelder[6],betas_nelder[7]]).reshape((5,1))
 
 #Production function [young,old]
-gamma1= [betas_nelder[8],betas_nelder[8] + 0.05]
+gamma1= [0.8,0.8 + 0.05]
 gamma2= [betas_nelder[9],betas_nelder[9] + 0.01]
 gamma3= [betas_nelder[10],betas_nelder[10] - 0.1]
-tfp=[betas_nelder[11],betas_nelder[11]-0.5]
+tfp=[betas_nelder[11],betas_nelder[11]-0.05]
 sigma2theta=1
 
 kappas=[[betas_nelder[12],betas_nelder[13],betas_nelder[14],betas_nelder[15]],
@@ -155,7 +155,7 @@ for i in range(var_cov.shape[0]):
 dict_grid=gridemax.grid()
 
 #For montercarlo integration
-D=50
+D=20
 
 #For II procedure
 M=30
