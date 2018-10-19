@@ -151,7 +151,7 @@ class Estimate:
 		age_aux=age_child[:,1].copy()
 		passign_aux=self.passign[:,0].copy()
 		cc_logit=choices_aux>=3
-		boo=(age_aux<=5) & (passign_aux==0)
+		boo=(passign_aux==0)
 		beta_childcare=np.mean(cc_logit[boo,:],axis=0) #beta for every m
 
 

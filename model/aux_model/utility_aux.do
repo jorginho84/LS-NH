@@ -14,7 +14,7 @@ gen age_t4=age_t0+4
 
 
 
-qui xi: reg d_CC2_t1 i.p_assign if age_t1<=5
+qui xi: reg d_CC2_t1 i.p_assign
 matrix beta_cc=_b[_cons]
 
 
