@@ -296,8 +296,8 @@ class Estimate:
 		for j in range(self.M):
 
 			#for gamma1
-			beta_inputs_young[0,j] = np.corrcoef(ssrs_t2_matrix_se[(self.passign[:,0]==0) & (age_aux[:,0]<=5),j],ssrs_t5_matrix_se[(self.passign[:,0]==0) & (age_aux[:,0]<=5),j])[1,0]
-			beta_inputs_old[0,j] = np.corrcoef(ssrs_t2_matrix_se[(self.passign[:,0]==0) & (age_aux[:,0]>5),j],ssrs_t5_matrix_se[(self.passign[:,0]==0) & (age_aux[:,0]>5),j])[1,0]
+			beta_inputs_young[0,j] = np.corrcoef(ssrs_t2_matrix_se[(self.passign[:,0]==0) & (age_child[:,1]<=5),j],ssrs_t5_matrix_se[(self.passign[:,0]==0) & (age_child[:,1]<=5),j])[1,0]
+			beta_inputs_old[0,j] = np.corrcoef(ssrs_t2_matrix_se[(self.passign[:,0]==0) & (age_child[:,1]>5),j],ssrs_t5_matrix_se[(self.passign[:,0]==0) & (age_child[:,1]>5),j])[1,0]
 			
 			#for gamma2 and 3
 			x_aux = np.concatenate((np.reshape(consumption_aux[(passign_aux==0) & (age_aux<=5),j],(consumption_aux[(passign_aux==0) & (age_aux<=5),j].shape[0],1)),
@@ -325,8 +325,8 @@ class Estimate:
 			b_cc1=choice_aux[:,j]>=3 #child care choice=1 at t=1
 			boo_young_cc0 = (b_cc0==True) & (passign_aux==0)
 			boo_young_cc1 = (b_cc1==True) & (passign_aux==0)
-			beta_inputs_young[3,j] = np.mean(ssrs_aux[boo_young_cc1 & age_aux<=5,j]) - np.mean(ssrs_aux[boo_young_cc0 & age_aux<=5,j])
-			beta_inputs_old[3,j] = np.mean(ssrs_aux[boo_young_cc1 & age_aux>5,j]) - np.mean(ssrs_aux[boo_young_cc0 & age_aux>5,j])
+			beta_inputs_young[3,j] = np.mean(ssrs_aux[(boo_young_cc1) & (age_aux<=5),j]) - np.mean(ssrs_aux[(boo_young_cc0) & (age_aux<=5),j])
+			beta_inputs_old[3,j] = np.mean(ssrs_aux[(boo_young_cc1) & (age_aux>5),j]) - np.mean(ssrs_aux[(boo_young_cc0) & (age_aux>5),j])
 			
 			
 			betas_init_prod[0,j] = np.corrcoef(ssrs_t2_matrix_se[self.passign[:,0]==0,j],np.log(wage_matrix[self.passign[:,0]==0,0,j]))[1,0]
