@@ -134,7 +134,7 @@ list_aux = [np.concatenate((beta_inputs_young,beta_inputs_old,betas_init_prod),a
 list_obs = [moments_vector[ind:ind +5+4 ,0]]
 list_sig = [se_vector[ind:ind + 5+4]]
 
-for c in range(5):
+for c in range(5+4):
 	ws['B' + str(c + pos)] = np.float(list_aux[0][c])
 	ws['D' + str(c + pos)] = np.float(list_obs[0][c])
 	ws['F' + str(c + pos)] = np.float(list_sig[0][c])
