@@ -476,8 +476,8 @@ class Emaxt:
 
 		pool = ProcessPool(nodes=10)
 
-		#7: old child (11 years old) solves for 7 emax 
-		#19: young child (0 years old) solves for 18 emax
+		#7: old child (10 years old) solves for 8 emax 
+		#19: young child (1 year old) solves for 17 emax
 		list_emax = pool.map(emax_gen,range(8,18),chunksize=1)
 		pool.close()
 		pool.join()

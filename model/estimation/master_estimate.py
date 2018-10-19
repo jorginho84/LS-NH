@@ -158,7 +158,7 @@ dict_grid=gridemax.grid()
 D=50
 
 #For II procedure
-M=1000
+M=30
 
 #How many hours is part- and full-time work
 hours_p=20
