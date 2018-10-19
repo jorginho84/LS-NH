@@ -177,6 +177,10 @@ destring year_ra, force replace
 replace year_ra = 1900 + year_ra
 
 gen age_t0=  year_ra - year_birth
+*due to rounding errors, ages 0 and 11 are 1 and 10
+replace age_t0=1 if age_t0==0
+replace age_t0=10 if age_t0==11
+
 gen age_t02=age_t0^2
 
 
@@ -184,7 +188,7 @@ gen age_t02=age_t0^2
 destring agechild, force replace
 gen age_t0=agechild-2
 drop if age_t0<0
-*due to rounding errors, ages 0 and 11 are 1 and 10
+
 replace age_t0=1 if age_t0==0
 replace age_t0=10 if age_t0==11
 gen age_t02=age_t0^2
@@ -570,6 +574,9 @@ gen delta_emp=d_emp_t1-d_emp_t0
 
 **Using d_HS based on highgrade: correlates more with wage
 gen d_HS2=higrade>=12
+
+*Age of child probably wrong
+drop if age_t0<1 | age_t0>11
 
 keep sampleid child d_RA p_assign age_ra age_ra2 d_marital* d_HS d_HS2 c91 /*
 */ nkids* hours_t* d_CC* constant emp_baseline  delta_emp skills_* c1 piinvyy /*

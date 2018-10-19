@@ -52,7 +52,7 @@ betas_nelder=np.load('/home/jrodriguez/understanding_NH/results/Model/betas_mode
 nperiods = 8
 
 #Utility function
-eta = betas_nelder[0]
+eta = 0.1
 alphap = betas_nelder[1]
 alphaf = betas_nelder[2]
 
@@ -61,10 +61,10 @@ wagep_betas=np.array([betas_nelder[3],betas_nelder[4],betas_nelder[5],
 	betas_nelder[6],betas_nelder[7]]).reshape((5,1))
 
 #Production function [young,old]
-gamma1= betas_nelder[8]
-gamma2= betas_nelder[9]
-gamma3= betas_nelder[10]
-tfp=betas_nelder[11]
+gamma1= [0.8,0.8 + 0.05]
+gamma2= [betas_nelder[9],betas_nelder[9] + 0.01]
+gamma3= [betas_nelder[10],betas_nelder[10] - 0.1]
+tfp=[betas_nelder[11],betas_nelder[11]-0.05]
 sigma2theta=1
 
 kappas=[[betas_nelder[12],betas_nelder[13],betas_nelder[14],betas_nelder[15]],
@@ -170,10 +170,10 @@ se_vector  = np.sqrt(np.diagonal(var_cov))
 dict_grid=gridemax.grid()
 
 #For montercarlo integration
-D=50
+D=20
 
 #For II procedure
-M=1000
+M=30
 
 #How many hours is part- and full-time work
 hours_p=20
@@ -215,8 +215,23 @@ print('Done with emax in:')
 print("--- %s seconds ---" % (time_emax))
 print('')
 print('')
+
+print('')
+print('')
+print('Getting a dictionary of betas')
+start_betas = time.time()
+print('')
+print('')
 choices = output_ins.samples(param0,emax_instance,model)
 dic_betas = output_ins.aux_model(choices)
+
+time_betas=time.time() - start_betas
+print('')
+print('')
+print('Done with betas in:')
+print("--- %s seconds ---" % (time_betas))
+print('')
+print('')
 
 #Getting the simulated betas
 #utility_aux
@@ -226,7 +241,8 @@ beta_hours2=np.mean(dic_betas['beta_hours2'],axis=0) #1x1
 beta_wagep=np.mean(dic_betas['beta_wagep'],axis=1) # 6 x 1
 beta_kappas_t2=np.mean(dic_betas['beta_kappas_t2'],axis=1) #4 x 3
 beta_kappas_t5=np.mean(dic_betas['beta_kappas_t5'],axis=1) #4 x 1
-beta_inputs=np.mean(dic_betas['beta_inputs'],axis=1) #5 x 1
+beta_inputs_young=np.mean(dic_betas['beta_inputs_young'],axis=1) #5 x 1
+beta_inputs_old=np.mean(dic_betas['beta_inputs_old'],axis=1) #5 x 1
 betas_init_prod=np.mean(dic_betas['betas_init_prod'],axis=1) #1 x 1
 
 #The sample: with young children at t=2
