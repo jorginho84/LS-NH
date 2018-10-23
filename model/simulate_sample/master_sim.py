@@ -67,10 +67,10 @@ wagep_betas=np.array([betas_nelder[3],betas_nelder[4],betas_nelder[5],
 
 
 #Production function [young,old]
-gamma1= [betas_nelder[8],betas_nelder[8] + 0.05]
-gamma2= [betas_nelder[9],betas_nelder[9] + 0.01]
-gamma3= [betas_nelder[10],betas_nelder[10] - 0.1]
-tfp=[betas_nelder[11],betas_nelder[11]-0.5]
+gamma1= betas_nelder[8]
+gamma2= betas_nelder[9]
+gamma3= betas_nelder[10]
+tfp=betas_nelder[11]
 sigma2theta=1
 
 kappas=[[betas_nelder[12],betas_nelder[13],betas_nelder[14],betas_nelder[15]],
@@ -151,11 +151,6 @@ married0=x_df[ ['d_marital_2']   ].values
 #age of child at baseline
 agech0=x_df[['age_t0']].values
 
-age = np.zeros((N,nperiods))
-for t in range(nperiods):
-	age[:,t] = agech0[:,0] + t
-
-
 #Defines the instance with parameters
 param=util.Parameters(alphap,alphaf,eta,gamma1,gamma2,gamma3,
 	tfp,sigma2theta, rho_theta_epsilon,wagep_betas, marriagep_betas, kidsp_betas, eitc_list,
@@ -186,7 +181,7 @@ start_time = time.time()
 print ('')
 print ('')
 
-D=15
+D=40
 np.random.seed(2)
 emax_function_in=emax.Emaxt(param,D,dict_grid,hours_p,hours_f,wr,cs,ws,model)
 emax_dic=emax_function_in.recursive() #8 emax (t=1 to t=8)
@@ -274,14 +269,7 @@ np.mean(np.mean(ct[passign[:,0]==0,:],axis=0))
 
 
 #Child care (t=0, all young)
-np.mean(cc_t[age[:,0]==6,0],axis=0)
-np.mean(cc_t[age[:,0]==7,0],axis=0)
-np.mean(cc_t[age[:,0]==8,0],axis=0)
-np.mean(cc_t[age[:,0]==9,0],axis=0)
-np.mean(cc_t[age[:,0]==10,0],axis=0)
-np.mean(cc_t[age[:,0]==11,0],axis=0)
-
-
+np.mean(cc_t[agech0[:,0]<=6,:],axis=0)
 ate_cc=np.mean(cc_t[(passign[:,0]==1) & (agech0[:,0]<=5),:],axis=0) - np.mean(cc_t[(passign[:,0]==0) & (agech0[:,0]<=5),:],axis=0)
 
 #Child care (t=0, all young, employed)
