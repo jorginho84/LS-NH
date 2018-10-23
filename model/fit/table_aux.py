@@ -130,9 +130,9 @@ list_aux = []
 list_obs = []
 list_sig = []
 #C. prod fn
-list_aux = [np.concatenate((beta_inputs_young,beta_inputs_old,betas_init_prod),axis=0)]
-list_obs = [moments_vector[ind:ind +5+4 ,0]]
-list_sig = [se_vector[ind:ind + 5+4]]
+list_aux = [np.concatenate((beta_inputs,betas_init_prod),axis=0)]
+list_obs = [moments_vector[ind:ind +5 ,0]]
+list_sig = [se_vector[ind:ind + 5]]
 
 for c in range(5+4):
 	ws['B' + str(c + pos)] = np.float(list_aux[0][c])

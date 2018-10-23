@@ -264,7 +264,7 @@ class Estimate:
 		leisure_matrix = np.zeros((self.N,hours_matrix.shape[1],self.M))
 		for t in range(hours_matrix.shape[1]):
 			leisure_matrix[age_child[:,t]<=5,t,:] = cc_matrix[age_child[:,t]<=5,t,:]*(168 - self.hours_f) + (168-hours_matrix[age_child[:,t]<=5,t,:])*(1-cc_matrix[age_child[:,t]<=5,t,:])
-			leisure_matrix[age_child[:,t]>5,t,:] = cc_matrix[age_child[:,t]>5,t,:]*(133 - self.hours_f) + (133-hours_matrix[age_child[:,t]>5,t,:])*(1-cc_matrix[age_child[:,t]>5,t,:])
+			leisure_matrix[age_child[:,t]>5,t,:] = 133 - hours_matrix[age_child[:,t]>5,t,:]
 		
 		#to panel
 		consumption_aux=np.concatenate((consumption_matrix[:,1,:],
@@ -280,8 +280,7 @@ class Estimate:
 		passign_aux=np.concatenate((self.passign[:,0],
 			self.passign[:,0]),axis=0)
 
-		beta_inputs_young=np.zeros((4,self.M)) #5 moments
-		beta_inputs_old=np.zeros((4,self.M)) #5 moments
+		beta_inputs=np.zeros((4,self.M)) #5 moments
 		betas_init_prod=np.zeros((1,self.M)) #5 moments
 		beta_kappas_t2=np.zeros((4,self.M)) #4 moments
 		beta_kappas_t5=np.zeros((4,self.M)) #4 moments
@@ -296,37 +295,37 @@ class Estimate:
 		for j in range(self.M):
 
 			#for gamma1
+<<<<<<< HEAD
 			beta_inputs_young[0,j] = np.corrcoef(ssrs_t2_matrix_se[(self.passign[:,0]==0) & (age_child[:,1]<=5),j],ssrs_t5_matrix_se[(self.passign[:,0]==0) & (age_child[:,1]<=5),j])[1,0]
 			beta_inputs_old[0,j] = np.corrcoef(ssrs_t2_matrix_se[(self.passign[:,0]==0) & (age_child[:,1]>5),j],ssrs_t5_matrix_se[(self.passign[:,0]==0) & (age_child[:,1]>5),j])[1,0]
+=======
+			beta_inputs[0,j] = np.corrcoef(ssrs_t2_matrix_se[self.passign[:,0]==0,j],ssrs_t5_matrix_se[self.passign[:,0]==0,j])[1,0]
+>>>>>>> parent of 552953a... new moments
 			
 			#for gamma2 and 3
-			x_aux = np.concatenate((np.reshape(consumption_aux[(passign_aux==0) & (age_aux<=5),j],(consumption_aux[(passign_aux==0) & (age_aux<=5),j].shape[0],1)),
-				np.reshape(leisure_aux[(passign_aux==0) & (age_aux<=5),j],(leisure_aux[(passign_aux==0) & (age_aux<=5),j].shape[0],1)),
-				np.ones((leisure_aux[(passign_aux==0) & (age_aux<=5),j].shape[0],1))),axis=1)
+			x_aux = np.concatenate((np.reshape(consumption_aux[passign_aux==0,j],(consumption_aux[passign_aux==0,j].shape[0],1)),
+				np.reshape(leisure_aux[passign_aux==0,j],(leisure_aux[passign_aux==0,j].shape[0],1)),
+				np.ones((leisure_aux[passign_aux==0,j].shape[0],1))),axis=1)
 			
 			xx_inv = np.linalg.inv(np.dot(np.transpose(x_aux),x_aux))
-			xy = np.dot(np.transpose(x_aux),ssrs_aux[(passign_aux==0) & (age_aux<=5),j])
+			xy = np.dot(np.transpose(x_aux),ssrs_aux[passign_aux==0,j])
 			beta = np.dot(xx_inv,xy)
-			beta_inputs_young[1,j] = beta[0]
-			beta_inputs_young[2,j] = beta[1]
-
-			x_aux = np.concatenate((np.reshape(consumption_aux[(passign_aux==0) & (age_aux>5),j],(consumption_aux[(passign_aux==0) & (age_aux>5),j].shape[0],1)),
-				np.reshape(leisure_aux[(passign_aux==0) & (age_aux>5),j],(leisure_aux[(passign_aux==0) & (age_aux>5),j].shape[0],1)),
-				np.ones((leisure_aux[(passign_aux==0) & (age_aux>5),j].shape[0],1))),axis=1)
-			
-			xx_inv = np.linalg.inv(np.dot(np.transpose(x_aux),x_aux))
-			xy = np.dot(np.transpose(x_aux),ssrs_aux[(passign_aux==0) & (age_aux>5),j])
-			beta = np.dot(xx_inv,xy)
-			beta_inputs_old[1,j] = beta[0]
-			beta_inputs_old[2,j] = beta[1]
+			beta_inputs[1,j] = beta[0]
+			beta_inputs[2,j] = beta[1]
 
 			#for tfp
 			b_cc0=choice_aux[:,j]<3 #child care choice=0 at t=1
 			b_cc1=choice_aux[:,j]>=3 #child care choice=1 at t=1
+<<<<<<< HEAD
 			boo_young_cc0 = (b_cc0==True) & (passign_aux==0)
 			boo_young_cc1 = (b_cc1==True) & (passign_aux==0)
 			beta_inputs_young[3,j] = np.mean(ssrs_aux[(boo_young_cc1) & (age_aux<=5),j]) - np.mean(ssrs_aux[(boo_young_cc0) & (age_aux<=5),j])
 			beta_inputs_old[3,j] = np.mean(ssrs_aux[(boo_young_cc1) & (age_aux>5),j]) - np.mean(ssrs_aux[(boo_young_cc0) & (age_aux>5),j])
+=======
+			boo_young_cc0 = (age_aux<=5) & (b_cc0==True) & (passign_aux==0)
+			boo_young_cc1 = (age_aux<=5) & (b_cc1==True) & (passign_aux==0)
+			beta_inputs[3,j] = np.mean(ssrs_aux[boo_young_cc1,j]) - np.mean(ssrs_aux[boo_young_cc0,j])
+>>>>>>> parent of 552953a... new moments
 			
 			
 			betas_init_prod[0,j] = np.corrcoef(ssrs_t2_matrix_se[self.passign[:,0]==0,j],np.log(wage_matrix[self.passign[:,0]==0,0,j]))[1,0]
@@ -336,8 +335,7 @@ class Estimate:
 		
 		return{'beta_childcare':beta_childcare,'beta_hours1': beta_hours1,
 		'beta_hours2':beta_hours2,'beta_wagep': beta_wagep,
-		'beta_kappas_t2': beta_kappas_t2,
-		'beta_inputs_young': beta_inputs_young,'beta_inputs_old': beta_inputs_old,
+		'beta_kappas_t2': beta_kappas_t2,'beta_inputs': beta_inputs,
 		'beta_kappas_t5':beta_kappas_t5,'betas_init_prod':betas_init_prod}
 	
 	
@@ -363,23 +361,19 @@ class Estimate:
 		self.param0.betaw[2]=beta[5]
 		self.param0.betaw[3]=np.exp(beta[6])
 		self.param0.betaw[4]=beta[7]
-		self.param0.gamma1[0]=beta[8]
-		self.param0.gamma2[0]=beta[9]
-		self.param0.gamma3[0]=beta[10]
-		self.param0.tfp[0]=beta[11]
-		self.param0.gamma1[1]=beta[12]
-		self.param0.gamma2[1]=beta[13]
-		self.param0.gamma3[1]=beta[14]
-		self.param0.tfp[1]=beta[15]
-		self.param0.kappas[0][0]=beta[16]
-		self.param0.kappas[0][1]=beta[17]
-		self.param0.kappas[0][2]=beta[18]
-		self.param0.kappas[0][3]=beta[19]
-		self.param0.kappas[1][0]=beta[20]
-		self.param0.kappas[1][1]=beta[21]
-		self.param0.kappas[1][2]=beta[22]
-		self.param0.kappas[1][3]=beta[23]
-		self.param0.rho_theta_epsilon=sym(beta[24])
+		self.param0.gamma1=beta[8]
+		self.param0.gamma2=beta[9]
+		self.param0.gamma3=beta[10]
+		self.param0.tfp=beta[11]
+		self.param0.kappas[0][0]=beta[12]
+		self.param0.kappas[0][1]=beta[13]
+		self.param0.kappas[0][2]=beta[14]
+		self.param0.kappas[0][3]=beta[15]
+		self.param0.kappas[1][0]=beta[16]
+		self.param0.kappas[1][1]=beta[17]
+		self.param0.kappas[1][2]=beta[18]
+		self.param0.kappas[1][3]=beta[19]
+		self.param0.rho_theta_epsilon=sym(beta[20])
 					
 
 		#The model (utility instance)
@@ -422,8 +416,7 @@ class Estimate:
 		beta_wagep=np.mean(dic_betas['beta_wagep'],axis=1) # 6 x 1
 		beta_kappas_t2=np.mean(dic_betas['beta_kappas_t2'],axis=1) #4 x 1
 		beta_kappas_t5=np.mean(dic_betas['beta_kappas_t5'],axis=1) #4 x 1
-		beta_inputs_young=np.mean(dic_betas['beta_inputs_young'],axis=1) #4 x 1
-		beta_inputs_old=np.mean(dic_betas['beta_inputs_old'],axis=1) #4 x 1
+		beta_inputs=np.mean(dic_betas['beta_inputs'],axis=1) #4 x 1
 		betas_init_prod=np.mean(dic_betas['betas_init_prod'],axis=1) #1 x 1
 		
 		
@@ -435,7 +428,7 @@ class Estimate:
 		###########################################################################
 
 		#Number of moments to match
-		num_par=beta_childcare.size + beta_hours1.size + beta_hours2.size + beta_wagep.size + + beta_kappas_t2.size +  beta_kappas_t5.size + beta_inputs_young.size + beta_inputs_old.size + betas_init_prod.size
+		num_par=beta_childcare.size + beta_hours1.size + beta_hours2.size + beta_wagep.size + + beta_kappas_t2.size +  beta_kappas_t5.size + beta_inputs.size + betas_init_prod.size
 		
 		#Outer matrix
 		x_vector=np.zeros((num_par,1))
@@ -459,12 +452,9 @@ class Estimate:
 		x_vector[ind: ind + beta_kappas_t5.size,0] = beta_kappas_t5 - self.moments_vector[ind: ind + beta_kappas_t5.size,0]
 		
 		ind = ind + beta_kappas_t5.size
-		x_vector[ind:ind + beta_inputs_young.size,0] = beta_inputs_young - self.moments_vector[ind:ind + beta_inputs_young.size,0]
-
-		ind = ind + beta_inputs_young.size
-		x_vector[ind:ind + beta_inputs_old.size,0] = beta_inputs_old - self.moments_vector[ind:ind + beta_inputs_old.size,0]
+		x_vector[ind:ind + beta_inputs.size,0] = beta_inputs - self.moments_vector[ind:ind + beta_inputs.size,0]
 		
-		ind = ind + beta_inputs_old.size
+		ind = ind + beta_inputs.size
 		x_vector[ind:ind + betas_init_prod.size,0] = betas_init_prod - self.moments_vector[ind:ind + betas_init_prod.size,0]
 		
 		
@@ -495,10 +485,8 @@ class Estimate:
 			self.param0.betaw[0],
 			self.param0.betaw[1],self.param0.betaw[2],
 			np.log(self.param0.betaw[3]),self.param0.betaw[4],
-			self.param0.gamma1[0],self.param0.gamma2[0],self.param0.gamma3[0],	
-			self.param0.tfp[0],
-			self.param0.gamma1[1],self.param0.gamma2[1],self.param0.gamma3[1],	
-			self.param0.tfp[1],
+			self.param0.gamma1,self.param0.gamma2,self.param0.gamma3,	
+			self.param0.tfp,
 			self.param0.kappas[0][0],self.param0.kappas[0][1],#kappa: t=2, m0
 			self.param0.kappas[0][2],self.param0.kappas[0][3], #kappa: t=2, m0
 			self.param0.kappas[1][0],self.param0.kappas[1][1],#kappa: t=5, m0
