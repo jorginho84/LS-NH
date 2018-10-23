@@ -1,7 +1,6 @@
 """
 exec(open('master_sim.py').read())
 
-
 (1) Defines a set of parameters and X's
 (2) Defines a grid of state variables
 (3) Obtains a dictionary with the set of emax functions
@@ -27,7 +26,6 @@ pip2.7 install --user line_profiler
 
 
 """
-#from __future__ import division #omit for python 3.x
 import numpy as np
 import pandas as pd
 import pickle
@@ -38,7 +36,6 @@ from scipy import interpolate
 import matplotlib.pyplot as plt
 import time
 from pathos.multiprocessing import ProcessPool
-#sys.path.append("C:\\Users\\Jorge\\Dropbox\\Chicago\\Research\\Human capital and the household\]codes\\model")
 sys.path.append("/home/jrodriguez/understanding_NH/codes/model/simulate_sample")
 import utility as util
 import gridemax
@@ -57,14 +54,13 @@ betas_nelder=np.load('/home/jrodriguez/understanding_NH/results/Model/betas_mode
 nperiods = 8
 
 #Utility function
-eta = betas_nelder[0]
-alphap = betas_nelder[1]
-alphaf = betas_nelder[2]
+eta=betas_nelder[0]
+alphap=betas_nelder[1]
+alphaf=betas_nelder[2]
 
 #wage process
 wagep_betas=np.array([betas_nelder[3],betas_nelder[4],betas_nelder[5],
 	betas_nelder[6],betas_nelder[7]]).reshape((5,1))
-
 
 #Production function [young,old]
 gamma1= betas_nelder[8]
@@ -78,7 +74,6 @@ kappas=[[betas_nelder[12],betas_nelder[13],betas_nelder[14],betas_nelder[15]],
 
 #initial theta
 rho_theta_epsilon = betas_nelder[20]
-
 #First measure is normalized. starting arbitrary values
 #All factor loadings are normalized
 lambdas=[1,1]
@@ -93,7 +88,6 @@ pafdc=.60
 psnap=.70
 
 #Data
-#X_aux=pd.read_csv('C:\\Users\\Jorge\\Dropbox\\Chicago\\Research\\Human capital and the household\\results\\Model\\Xs.csv')
 X_aux=pd.read_csv('/home/jrodriguez/understanding_NH/results/Model/sample_model_v2.csv')
 x_df=X_aux
 
@@ -181,7 +175,7 @@ start_time = time.time()
 print ('')
 print ('')
 
-D=40
+D=20
 np.random.seed(2)
 emax_function_in=emax.Emaxt(param,D,dict_grid,hours_p,hours_f,wr,cs,ws,model)
 emax_dic=emax_function_in.recursive() #8 emax (t=1 to t=8)

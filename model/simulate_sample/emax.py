@@ -21,7 +21,6 @@ from scipy import stats
 import gc
 from scipy import interpolate
 from pathos.multiprocessing import ProcessPool
-#sys.path.append("C:\\Users\\Jorge\\Dropbox\\Chicago\\Research\\Human capital and the household\]codes\\model")
 sys.path.append("/home/jrodriguez/understanding_NH/codes/model/simulate_sample")
 import utility as util
 import gridemax
@@ -455,9 +454,6 @@ class Emaxt:
 		"""	
 		
 		"""
-=======
->>>>>>> parent of 3db3a4c... Simulating new model
-	
 		def emax_gen(j):
 			
 			for t in range(j,0,-1):
@@ -484,21 +480,19 @@ class Emaxt:
 
 			return [emax_dic,emax_values]
 
-		pool = ProcessPool(nodes=8)
+		pool = ProcessPool(nodes=3)
 
-		#7: old child (10 years old) solves for 8 emax 
-		#19: young child (1 year old) solves for 17 emax
-		list_emax = pool.map(emax_gen,range(8,18),chunksize=1)
+		#7: old child (11 years old) solves for 7 emax 
+		#19: young child (0 years old) solves for 18 emax
+		list_emax = pool.map(emax_gen,range(8,18))
 		pool.close()
 		pool.join()
 		pool.clear()
-
+		
+		
 		"""
 		
 		
-		
-		
-	
 		list_emax = []
 		for j in range(8,18):
 			print ('Im in emax j ', j)
@@ -522,6 +516,7 @@ class Emaxt:
 
 			list_emax.append([emax_dic,emax_values])
 
+		
 		
 		
 		
