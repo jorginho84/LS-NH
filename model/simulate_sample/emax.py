@@ -446,7 +446,7 @@ class Emaxt:
 
 		"""	
 		
-		
+		"""
 	
 		def emax_gen(j):
 			
@@ -474,7 +474,7 @@ class Emaxt:
 
 			return [emax_dic,emax_values]
 
-		pool = ProcessPool(nodes=10)
+		pool = ProcessPool(nodes=8)
 
 		#7: old child (10 years old) solves for 8 emax 
 		#19: young child (1 year old) solves for 17 emax
@@ -482,13 +482,15 @@ class Emaxt:
 		pool.close()
 		pool.join()
 		pool.clear()
-		
-		
-		
-		
+
 		"""
+		
+		
+		
+		
+	
 		list_emax = []
-		for j in range(7,19):
+		for j in range(8,18):
 			print ('Im in emax j ', j)
 			
 			for t in range(j,0,-1):
@@ -511,7 +513,6 @@ class Emaxt:
 			list_emax.append([emax_dic,emax_values])
 
 		
-		"""
 		
 		
 

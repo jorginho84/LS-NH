@@ -330,6 +330,8 @@ class Estimate:
 			
 			
 			betas_init_prod[0,j] = np.corrcoef(ssrs_t2_matrix_se[self.passign[:,0]==0,j],np.log(wage_matrix[self.passign[:,0]==0,0,j]))[1,0]
+
+		
 		
 		
 		return{'beta_childcare':beta_childcare,'beta_hours1': beta_hours1,
@@ -505,7 +507,8 @@ class Estimate:
 
 		
 		#Here we go
-		opt = minimize(self.ll, beta0,  method='Nelder-Mead', options={'maxiter':5000, 'maxfev': 90000, 'ftol': 1e-3, 'disp': True});
+		opt = minimize(self.ll, beta0,  method='Nelder-Mead', options={'maxiter':5000, 'maxfev': 90000, 'ftol': 1e-3, 'disp': True, 'adaptive': True});
+		#opt = minimize(self.ll, beta0,  method='bfgs', options={'maxiter':5000, 'gtol': 1e-3, 'disp': True});
 		
 		return opt
 
