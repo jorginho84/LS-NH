@@ -48,10 +48,17 @@ wagep_betas=np.array([betas_nelder[3],betas_nelder[4],betas_nelder[5],
 	betas_nelder[6],betas_nelder[7]]).reshape((5,1))
 
 #Production function [young,old]
+<<<<<<< HEAD
 gamma1= betas_nelder[8]
 gamma2= betas_nelder[9]
 gamma3= betas_nelder[10]
 tfp=betas_nelder[11]
+=======
+gamma1= [0.8,0.8 + 0.05]
+gamma2= [betas_nelder[9],betas_nelder[9] + 0.01]
+gamma3= [betas_nelder[10],betas_nelder[10] - 0.1]
+tfp=[betas_nelder[11],betas_nelder[11]-0.05]
+>>>>>>> parent of c49db95... Revert "new moments"
 sigma2theta=1
 
 kappas=[[betas_nelder[12],betas_nelder[13],betas_nelder[14],betas_nelder[15]],
@@ -194,26 +201,31 @@ betaw1=output.x[4]
 betaw2=output.x[5]
 betaw3=np.exp(output.x[6])
 betaw4=output.x[7]
-gamma1_opt=output.x[8]
-gamma2_opt=output.x[9]
-gamma3_opt=output.x[10]
-tfp_opt=output.x[11]
-kappas_00=output.x[12]
-kappas_01=output.x[13]
-kappas_02=output.x[14]
-kappas_03=output.x[15]
-kappas_10=output.x[16]
-kappas_11=output.x[17]
-kappas_12=output.x[18]
-kappas_13=output.x[19]
-rho_theta_epsilon_opt = sym(output.x[20])
+gamma1_y=output.x[8]
+gamma2_y=output.x[9]
+gamma3_y=output.x[10]
+tfp_y=output.x[11]
+gamma1_o=output.x[12]
+gamma2_o=output.x[13]
+gamma3_o=output.x[14]
+tfp_o=output.x[15]
+kappas_00=output.x[16]
+kappas_01=output.x[17]
+kappas_02=output.x[18]
+kappas_03=output.x[19]
+kappas_10=output.x[20]
+kappas_11=output.x[21]
+kappas_12=output.x[22]
+kappas_13=output.x[23]
+rho_theta_epsilon_opt = sym(output.x[24])
 
 
 
 
 betas_opt=np.array([eta_opt, alphap_opt,alphaf_opt,
 	betaw0,betaw1,betaw2,betaw3,betaw4,
-	gamma1_opt,gamma2_opt,gamma3_opt,tfp_opt,
+	gamma1_y,gamma2_y,gamma3_y,tfp_y,
+	gamma1_o,gamma2_o,gamma3_o,tfp_o,
 	kappas_00,kappas_01,kappas_02,kappas_03,
 	kappas_10,kappas_11,kappas_12,kappas_13,rho_theta_epsilon_opt])
 
