@@ -454,7 +454,6 @@ class Emaxt:
 
 		"""	
 		
-<<<<<<< HEAD
 		"""
 =======
 >>>>>>> parent of 3db3a4c... Simulating new model
