@@ -158,7 +158,7 @@ se_vector  = np.sqrt(np.diagonal(var_cov))
 dict_grid=gridemax.grid()
 
 #For montercarlo integration
-D=2
+D=20
 
 #Number of samples to produce
 M=30
@@ -312,7 +312,7 @@ ax.yaxis.set_ticks_position('left')
 ax.xaxis.set_ticks_position('bottom')
 ax.set_xticklabels(['Full treatment', 'No CC subsidy'])
 ax.set_xticks([x[0]+(bar_width)/2,x[1]+(bar_width)/2])
-ax.legend(loc=loc,fontsize=15)
+ax.legend(loc=loc_legen,fontsize=15)
 plt.show()
 fig.savefig('/home/jrodriguez/understanding_NH/results/Model/experiments/NH/ate_emp.pdf', format='pdf')
 plt.close()
@@ -335,7 +335,7 @@ ax.yaxis.set_ticks_position('left')
 ax.xaxis.set_ticks_position('bottom')
 ax.set_xticklabels(['Full treatment', 'No CC subsidy'])
 ax.set_xticks([x[0]+(bar_width)/2,x[1]+(bar_width)/2])
-ax.legend(loc=loc,fontsize=15)
+ax.legend(loc=loc_legen,fontsize=15)
 plt.show()
 fig.savefig('/home/jrodriguez/understanding_NH/results/Model/experiments/NH/ate_hours_1.pdf', format='pdf')
 plt.close()
@@ -357,7 +357,7 @@ ax.yaxis.set_ticks_position('left')
 ax.xaxis.set_ticks_position('bottom')
 ax.set_xticklabels(['Full treatment', 'No CC subsidy'])
 ax.set_xticks([x[0]+(bar_width)/2,x[1]+(bar_width)/2])
-ax.legend(loc=loc,fontsize=15)
+ax.legend(loc=loc_legen,fontsize=15)
 plt.show()
 fig.savefig('/home/jrodriguez/understanding_NH/results/Model/experiments/NH/ate_hours_2.pdf', format='pdf')
 plt.close()
